@@ -1,0 +1,25 @@
+{
+  "name": "gonodejs-test",
+  "version": "1.0.0",
+  "description": "Just testing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bep/gonodejs-test.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bep/gonodejs-test/issues"
+  },
+  "homepage": "https://github.com/bep/gonodejs-test#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "core-js": "^3.0.1"
+  }
+}
