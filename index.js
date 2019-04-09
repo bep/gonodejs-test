@@ -9,13 +9,9 @@ http.createServer(function (req, res) {
 			body += chunk.toString();
 		});
 		req.on('end', () => {
-			const { code } = babel.transformSync(body, {code: true})
-			console.log("Got %s", code)
+			const { code } = babel.transformSync(body, { code: true });
+			res.write(code);
 			res.end();
 		});
 	}
-	res.write("Node!");
-	res.end();
 }).listen(port);
-
-console.log('Node server started at port: %d', port);

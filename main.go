@@ -1,14 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
+)
+
+const (
+	jsSource = `[1, 2, 3].map((n) => n + 1)`
+	nodeHTTP = "http://localhost:8182"
 )
 
 func main() {
@@ -18,7 +25,11 @@ func main() {
 
 	time.Sleep(300 * time.Millisecond)
 
-	transpileViaHTTP()
+	res, err := transpileViaHTTP()
+	log.Println("HTTP:", res, err)
+
+	res, err = transpileViaExec()
+	log.Println("EXEC:", res, err)
 
 	time.Sleep(3 * time.Second)
 
@@ -26,25 +37,47 @@ func main() {
 
 }
 
-const (
-	jsSource = `[1, 2, 3].map((n) => n + 1)`
-	nodeHTTP = "http://localhost:8182"
-)
-
-func transpileViaHTTP() {
+func transpileViaHTTP() (string, error) {
 	resp, err := http.DefaultClient.Post(nodeHTTP, "text/plain", strings.NewReader(jsSource))
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	defer resp.Body.Close()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	fmt.Println("Got", string(b))
+	return string(b), nil
+}
+
+func transpileViaExec() (string, error) {
+	bin := filepath.FromSlash("node_modules/@babel/cli/bin/babel.js")
+	var out bytes.Buffer
+
+	cmd := exec.Command(bin, "--no-babelrc")
+
+	cmd.Stdout = &out
+	cmd.Stderr = os.Stderr
+
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return "", err
+	}
+
+	go func() {
+		defer stdin.Close()
+		io.Copy(stdin, strings.NewReader(jsSource))
+	}()
+
+	err = cmd.Run()
+	if err != nil {
+		return "", err
+	}
+
+	return out.String(), nil
 }
 
 func startNode() *exec.Cmd {
