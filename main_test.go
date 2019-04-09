@@ -24,8 +24,6 @@ func TestBabelHTTP(t *testing.T) {
 		t.Errorf("got: %s", s)
 	}
 
-	time.Sleep(1 * time.Second)
-
 }
 
 func TestBabelExec(t *testing.T) {

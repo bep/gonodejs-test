@@ -31,8 +31,6 @@ func main() {
 	res, err = transpileViaExec()
 	log.Println("EXEC:", res, err)
 
-	time.Sleep(3 * time.Second)
-
 	nodeCmd.Process.Signal(os.Kill)
 
 }
